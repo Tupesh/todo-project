@@ -24,6 +24,9 @@ Run : Docker Compose
 
 ```bash
 docker compose up --build
+
+docker compose exec backend alembic upgrade head
+
 ```
 
 This will build and start the database, backend, and frontend services defined in `docker-compose.yaml`.
