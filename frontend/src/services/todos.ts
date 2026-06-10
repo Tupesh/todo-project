@@ -1,9 +1,5 @@
-import axios from 'axios'
+import { api } from './api'
 import type { Todo, TodoCreate, TodoUpdate } from '../types'
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
-})
 
 export async function fetchTodos(): Promise<Todo[]> {
   const response = await api.get<Todo[]>('/api/todos')

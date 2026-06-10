@@ -7,6 +7,10 @@ Supported services
 - Backend: FastAPI (http://localhost:8000)
 - Database: PostgreSQL
 
+Authentication
+- Email/password sign in and registration
+- JWT bearer auth for protected todo routes
+
 Run (recommended): Docker Compose
 
 ```bash
@@ -44,6 +48,12 @@ alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 ```
 
+If you are using Docker Compose, keep `backend/.env` pointed at the Compose service name:
+
+```bash
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@database:5432/todo_db
+```
+
 3) Frontend
 
 ```bash
@@ -64,6 +74,10 @@ Notes
 - For production use, consider running the backend under a production server (gunicorn) and configuring proper secrets.
 
 API endpoints
+
+- `POST /api/auth/register` register and receive a JWT
+- `POST /api/auth/login` sign in and receive a JWT
+- `GET /api/auth/me` fetch the current authenticated user
 
 - `GET /api/todos` list todos
 - `POST /api/todos` create todo

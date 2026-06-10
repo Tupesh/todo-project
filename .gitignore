@@ -18,3 +18,5 @@ frontend/.env
 .DS_Store
 .vscode/
 .idea/
+
+handoff.md
