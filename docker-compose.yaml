@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     
     ports:
-      - 3000:80
+      - 80:80
     
     env_file:
       - ./frontend/.env
@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     
     ports:
-      - 8001:8000
+      - 8000:8000
 
     env_file:
       - ./backend/.env
@@ -28,7 +28,7 @@ services:
       - database
 
   database:
-      image: postgres:15
+      image: postgres:15-alpine
       container_name: todo-db
       environment:
         POSTGRES_PASSWORD: postgres

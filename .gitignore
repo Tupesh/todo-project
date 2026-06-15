@@ -20,3 +20,4 @@ frontend/.env
 .idea/
 
 handoff.md
+dockerpush.sh
