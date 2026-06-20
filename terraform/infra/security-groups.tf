@@ -235,3 +235,51 @@ resource "aws_vpc_security_group_egress_rule" "k8s_node_all_out" {
     Name = "k8s-node-all-out"
   }
 }
+
+
+
+resource "aws_vpc_security_group_ingress_rule" "docker_agent_ssh_from_tooling" {
+  security_group_id            = aws_security_group.docker_agent.id
+  referenced_security_group_id = aws_security_group.tooling.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+
+  tags = {
+    Name = "docker-agent-ssh-from-tooling"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "deploy_agent_ssh_from_tooling" {
+  security_group_id            = aws_security_group.deploy_agent.id
+  referenced_security_group_id = aws_security_group.tooling.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+
+  tags = {
+    Name = "deploy-agent-ssh-from-tooling"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "k8s_node_ssh_from_deploy_agent" {
+  security_group_id            = aws_security_group.k8s_node.id
+  referenced_security_group_id = aws_security_group.deploy_agent.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+
+  tags = {
+    Name = "k8s-node-ssh-from-deploy-agent"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "k8s_internal_all" {
+  security_group_id            = aws_security_group.k8s_node.id
+  referenced_security_group_id = aws_security_group.k8s_node.id
+  ip_protocol                  = "-1"
+
+  tags = {
+    Name = "k8s-internal-all"
+  }
+}

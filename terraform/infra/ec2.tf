@@ -81,3 +81,24 @@ resource "aws_instance" "k8s_node" {
     ManagedBy   = "terraform"
   }
 }
+
+resource "aws_instance" "k8s_worker" {
+  ami                         = "ami-0f8a61b66d1accaee"
+  instance_type               = "t3.small"
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.k8s_node.id]
+  associate_public_ip_address = true
+  key_name                    = var.key_pair_name
+
+  root_block_device {
+    volume_size = 40
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name        = "devops-demo-k8s-worker"
+    Environment = "dev"
+    Purpose     = "kubernetes-worker-node"
+    ManagedBy   = "terraform"
+  }
+}
