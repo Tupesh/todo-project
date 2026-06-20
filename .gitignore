@@ -2,8 +2,12 @@
 frontend/node_modules/
 frontend/dist/
 
+stateS3
+
 # Python
 backend/.venv/
+backend/venv/
+backend/venv/*
 backend/__pycache__/
 backend/.pytest_cache/
 backend/.mypy_cache/
@@ -22,4 +26,69 @@ frontend/.env
 handoff.md
 dockerpush.sh
 
-venv/
+# Terraform local state
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform working directory
+.terraform/
+**/.terraform/*
+
+# Terraform lock file
+# Keep this committed for provider version consistency.
+# Do NOT ignore it.
+# .terraform.lock.hcl
+
+# Terraform variable files with secrets
+*.tfvars
+*.tfvars.json
+
+# Exception: allow example variable files
+!*.tfvars.example
+!terraform.tfvars.example
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Terraform override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform plan files
+*.tfplan
+tfplan
+plan.out
+
+# CLI config files
+.terraformrc
+terraform.rc
+
+# AWS credentials, because leaking these is how cloud bills become horror stories
+.aws/
+aws_credentials
+credentials
+config
+
+# SSH keys
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
