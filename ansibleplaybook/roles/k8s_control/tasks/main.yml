@@ -5,7 +5,10 @@
   register: kubeadm_admin_conf
 
 - name: Initialize Kubernetes control plane
-  ansible.builtin.command: kubeadm init --pod-network-cidr=192.168.0.0/16
+  ansible.builtin.command: >
+    kubeadm init
+    --pod-network-cidr=192.168.0.0/16
+    --apiserver-advertise-address={{ ansible_host }}
   when: not kubeadm_admin_conf.stat.exists
 
 - name: Create .kube directory for ubuntu user
@@ -25,20 +28,21 @@
     group: ubuntu
     mode: "0600"
 
-- name: Install Calico CNI
-  ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/calico.yaml
+- name: Install Calico pod network
+  ansible.builtin.command: >
+    kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/calico.yaml
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   changed_when: false
 
-- name: Get Kubernetes join command
+- name: Generate fresh Kubernetes join command
   ansible.builtin.command: kubeadm token create --print-join-command
-  register: join_command
+  register: kubeadm_join_command
   changed_when: false
 
-- name: Save join command locally on control node
+- name: Save join command on control node
   ansible.builtin.copy:
-    content: "{{ join_command.stdout }}"
+    content: "{{ kubeadm_join_command.stdout }}\n"
     dest: /tmp/kubeadm_join_command.sh
     owner: root
     group: root

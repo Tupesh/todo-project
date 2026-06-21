@@ -34,3 +34,39 @@
   become: true
   roles:
     - k8s_worker
+
+- name: Fetch kubeconfig from Kubernetes control plane
+  hosts: k8s_control
+  become: true
+  tasks:
+    - name: Fetch admin kubeconfig to Ansible control machine
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: /tmp/devops-demo-kubeconfig
+        flat: true
+
+- name: Copy kubeconfig to deploy agent
+  hosts: deploy_agent
+  become: true
+  tasks:
+    - name: Create .kube directory on deploy agent
+      ansible.builtin.file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+
+    - name: Copy kubeconfig to deploy agent
+      ansible.builtin.copy:
+        src: /tmp/devops-demo-kubeconfig
+        dest: /home/ubuntu/.kube/config
+        owner: ubuntu
+        group: ubuntu
+        mode: "0600"
+
+    - name: Ensure kubeconfig points to Kubernetes control private IP
+      ansible.builtin.replace:
+        path: /home/ubuntu/.kube/config
+        regexp: 'server: https://.*:6443'
+        replace: "server: https://{{ hostvars[groups['k8s_control'][0]].ansible_host }}:6443"
