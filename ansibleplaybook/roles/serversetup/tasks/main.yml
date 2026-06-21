@@ -1,0 +1,27 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install common packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - wget
+      - git
+      - unzip
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - software-properties-common
+      - openjdk-21-jre-headless
+    state: present
+
+- name: Create project directory
+  ansible.builtin.file:
+    path: /opt/devops-demo
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"

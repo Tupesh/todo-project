@@ -1,0 +1,28 @@
+[docker_agent]
+docker-agent ansible_host=10.0.1.222 ansible_user=ubuntu
+
+[deploy_agent]
+deploy-agent ansible_connection=10.0.1.151
+
+[k8s_control]
+k8s-control ansible_host=10.0.1.16 ansible_user=ubuntu
+
+[k8s_worker]
+k8s-worker ansible_host=10.0.1.160 ansible_user=ubuntu
+
+[k8s:children]
+k8s_control
+k8s_worker
+
+[servers:children]
+docker_agent
+deploy_agent
+k8s_control
+k8s_worker
+
+[jenkins_agents:children]
+docker_agent
+deploy_agent
+
+[servers:vars]
+ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/todo-infra-kp.pem
