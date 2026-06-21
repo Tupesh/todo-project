@@ -283,3 +283,16 @@ resource "aws_vpc_security_group_ingress_rule" "k8s_internal_all" {
     Name = "k8s-internal-all"
   }
 }
+
+
+resource "aws_vpc_security_group_ingress_rule" "docker_agent_ssh_from_deploy_agent" {
+  security_group_id            = aws_security_group.docker_agent.id
+  referenced_security_group_id = aws_security_group.deploy_agent.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+
+  tags = {
+    Name = "docker-agent-ssh-from-deploy-agent"
+  }
+}
