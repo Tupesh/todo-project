@@ -1,3 +1,72 @@
 #SPDX-License-Identifier: MIT-0
 ---
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - unzip
+      - ca-certificates
+      - apt-transport-https
+      - gnupg
+    state: present
+    update_cache: true
+
+# -------------------------
+# AWS CLI v2
+# -------------------------
+
+- name: Download AWS CLI v2 installer
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: /tmp/awscliv2.zip
+    mode: "0644"
+
+- name: Unzip AWS CLI v2 installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: true
+
+- name: Install or update AWS CLI v2
+  ansible.builtin.command: /tmp/aws/install --update
+  args:
+    creates: /usr/local/bin/aws
+
+# -------------------------
+# kubectl
+# -------------------------
+
+- name: Download latest stable kubectl
+  ansible.builtin.shell: |
+    curl -L -o /usr/local/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x /usr/local/bin/kubectl
+  args:
+    creates: /usr/local/bin/kubectl
+
+# -------------------------
+# Helm
+# -------------------------
+
+- name: Download Helm install script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    mode: "0700"
+
+- name: Install Helm
+  ansible.builtin.command: /tmp/get_helm.sh
+  args:
+    creates: /usr/local/bin/helm
+
+# -------------------------
+# Jenkins agent directory
+# -------------------------
+
+- name: Create Jenkins agent directory
+  ansible.builtin.file:
+    path: /home/ubuntu/jenkins-agent
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
 # tasks file for deploy_agent
