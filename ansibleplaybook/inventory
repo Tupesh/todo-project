@@ -25,4 +25,4 @@ docker_agent
 deploy_agent
 
 [servers:vars]
-ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/todo-infra-kp.pem
+ansible_ssh_private_key_file=/home/ubuntu/todo-infra-kp.pem
