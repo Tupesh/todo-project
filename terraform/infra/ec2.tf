@@ -26,6 +26,7 @@ resource "aws_instance" "docker_agent" {
   vpc_security_group_ids      = [aws_security_group.docker_agent.id]
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
+  iam_instance_profile        = aws_iam_instance_profile.docker_agent_profile.name
 
   root_block_device {
     volume_size = 60
@@ -47,6 +48,7 @@ resource "aws_instance" "deploy_agent" {
   vpc_security_group_ids      = [aws_security_group.deploy_agent.id]
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
+  iam_instance_profile        = aws_iam_instance_profile.docker_agent_profile.name
 
   root_block_device {
     volume_size = 40
