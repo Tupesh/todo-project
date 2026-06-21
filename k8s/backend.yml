@@ -31,7 +31,7 @@ spec:
                 secretKeyRef:
                   name: backend-secret
                   key: JWT_SECRET
-            - name: CLIENT_URL
+            - name: FRONTEND_ORIGIN
               value: "http://34.231.171.34:30080"
 ---
 apiVersion: v1
