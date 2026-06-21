@@ -25,3 +25,51 @@
     owner: ubuntu
     group: ubuntu
     mode: "0755"
+
+- name: Install packages needed for AWS CLI and Trivy
+  ansible.builtin.apt:
+    name:
+      - unzip
+      - curl
+      - wget
+      - gnupg
+      - apt-transport-https
+    state: present
+    update_cache: true
+
+- name: Download AWS CLI v2 installer
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: /tmp/awscliv2.zip
+    mode: "0644"
+
+- name: Unzip AWS CLI v2 installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: true
+
+- name: Install AWS CLI v2
+  ansible.builtin.command: /tmp/aws/install --update
+  args:
+    creates: /usr/local/bin/aws
+
+- name: Add Trivy GPG key
+  ansible.builtin.shell: |
+    wget -qO - https://get.trivy.dev/deb/public.key | gpg --dearmor > /usr/share/keyrings/trivy.gpg
+  args:
+    creates: /usr/share/keyrings/trivy.gpg
+
+- name: Add Trivy apt repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/trivy.list
+    content: "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://get.trivy.dev/deb generic main\n"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install Trivy
+  ansible.builtin.apt:
+    name: trivy
+    state: present
+    update_cache: true
