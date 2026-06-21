@@ -296,3 +296,15 @@ resource "aws_vpc_security_group_ingress_rule" "docker_agent_ssh_from_deploy_age
     Name = "docker-agent-ssh-from-deploy-agent"
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "k8s_node_ssh_from_tooling" {
+  security_group_id            = aws_security_group.k8s_node.id
+  referenced_security_group_id = aws_security_group.tooling.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+
+  tags = {
+    Name = "k8s-node-ssh-from-tooling"
+  }
+}
