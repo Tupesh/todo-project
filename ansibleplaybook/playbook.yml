@@ -5,15 +5,32 @@
   roles:
     - serversetup
 
-- name: Prepare Jenkins agent directories
-  hosts: jenkins_agents
+- name: Configure Docker build agent
+  hosts: docker_agent
   become: true
+  roles:
+    - docker_agent
 
-  tasks:
-    - name: Create Jenkins agent directory
-      ansible.builtin.file:
-        path: /home/ubuntu/jenkins-agent
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: "0755"
+- name: Configure deploy agent
+  hosts: deploy_agent
+  become: true
+  roles:
+    - deploy_agent
+
+- name: Prepare Kubernetes nodes
+  hosts: k8s
+  become: true
+  roles:
+    - k8s_common
+
+- name: Configure Kubernetes control plane
+  hosts: k8s_control
+  become: true
+  roles:
+    - k8s_control
+
+- name: Join Kubernetes worker node
+  hosts: k8s_worker
+  become: true
+  roles:
+    - k8s_worker
