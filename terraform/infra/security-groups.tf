@@ -320,3 +320,15 @@ resource "aws_vpc_security_group_ingress_rule" "k8s_node_frontend_nodeport" {
     Name = "k8s-node-frontend-nodeport"
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "k8s_node_backend_nodeport" {
+  security_group_id = aws_security_group.k8s_node.id
+  cidr_ipv4         = var.my_ip
+  from_port         = 30081
+  ip_protocol       = "tcp"
+  to_port           = 30081
+
+  tags = {
+    Name = "k8s-node-backend-nodeport"
+  }
+}
