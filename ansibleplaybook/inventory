@@ -2,7 +2,7 @@
 docker-agent ansible_host=10.0.1.222 ansible_user=ubuntu
 
 [deploy_agent]
-deploy-agent ansible_connection=10.0.1.151
+deploy-agent ansible_connection=10.0.1.151 ansible_user=ubuntu
 
 [k8s_control]
 k8s-control ansible_host=10.0.1.16 ansible_user=ubuntu
