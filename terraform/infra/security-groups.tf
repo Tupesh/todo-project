@@ -308,3 +308,15 @@ resource "aws_vpc_security_group_ingress_rule" "k8s_node_ssh_from_tooling" {
     Name = "k8s-node-ssh-from-tooling"
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "k8s_node_frontend_nodeport" {
+  security_group_id = aws_security_group.k8s_node.id
+  cidr_ipv4         = var.my_ip
+  from_port         = 30080
+  ip_protocol       = "tcp"
+  to_port           = 30080
+
+  tags = {
+    Name = "k8s-node-frontend-nodeport"
+  }
+}
