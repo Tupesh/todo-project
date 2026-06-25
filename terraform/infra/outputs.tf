@@ -25,7 +25,7 @@ output "deploy_agent_public_ip" {
 
 output "k8s_node_public_ip" {
   description = "Public IP of Kubernetes node"
-  value       = aws_instance.k8s_node.public_ip
+  value       = aws_instance.k8s_control.public_ip
 }
 
 output "jenkins_url" {
@@ -78,9 +78,9 @@ output "deploy_agent_private_ip" {
   value       = aws_instance.deploy_agent.private_ip
 }
 
-output "k8s_node_private_ip" {
-  description = "Private IP of Kubernetes node"
-  value       = aws_instance.k8s_node.private_ip
+output "k8s_node_private_control_plane_ip" {
+  description = "Private IP of Kubernetes control plane"
+  value       = aws_instance.k8s_control.private_ip
 }
 
 output "k8s_worker_public_ip" {
