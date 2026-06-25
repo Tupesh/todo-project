@@ -1,5 +1,5 @@
 resource "local_file" "ansible_inventory" {
-  filename = "${path.module}/../ansibleplaybook/hosts.ini"
+  filename = "${path.module}/../../ansibleplaybook/hosts.ini"
 
   content = templatefile("${path.module}/templates/hosts.ini.tpl", {
     docker_agent_private_ip = aws_instance.docker_agent.private_ip

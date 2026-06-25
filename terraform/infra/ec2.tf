@@ -1,6 +1,6 @@
 resource "aws_instance" "tooling" {
   ami                         = "ami-0f8a61b66d1accaee"
-  instance_type               = "t3.micro"
+  instance_type               = "m7i-flex.large"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.tooling.id]
   associate_public_ip_address = true
