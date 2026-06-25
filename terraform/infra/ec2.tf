@@ -6,6 +6,9 @@ resource "aws_instance" "tooling" {
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
 
+  user_data = file("${path.module}/tooling-bootstrap.sh")
+
+
   root_block_device {
     volume_size = 80
     volume_type = "gp3"

@@ -1,0 +1,74 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages for tooling server
+  ansible.builtin.apt:
+    name:
+      - curl
+      - wget
+      - git
+      - unzip
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - fontconfig
+      - openjdk-21-jre
+      - ansible
+      - docker.io
+    state: present
+
+- name: Ensure Docker service is enabled and running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add ubuntu user to docker group
+  ansible.builtin.user:
+    name: ubuntu
+    groups: docker
+    append: true
+
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download Jenkins repository key
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+    dest: /etc/apt/keyrings/jenkins-keyring.asc
+    mode: "0644"
+
+- name: Add Jenkins apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+    filename: jenkins
+    state: present
+
+- name: Update apt cache after adding Jenkins repository
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: jenkins
+    state: present
+
+- name: Ensure Jenkins service is enabled and running
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+    enabled: true
+
+- name: Create project directory for tooling files
+  ansible.builtin.file:
+    path: /opt/devops-demo
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"

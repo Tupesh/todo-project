@@ -1,0 +1,8 @@
+---
+- name: Configure tooling server
+  hosts: localhost
+  connection: local
+  become: true
+
+  roles:
+    - tooling
