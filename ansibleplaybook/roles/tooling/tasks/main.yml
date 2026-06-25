@@ -18,6 +18,8 @@
       - openjdk-21-jre
       - ansible
       - docker.io
+      - docker-compose-v2
+
     state: present
 
 - name: Ensure Docker service is enabled and running
