@@ -1,6 +1,6 @@
 resource "aws_instance" "tooling" {
   ami                         = "ami-0f8a61b66d1accaee"
-  instance_type               = "m7i-flex.large"
+  instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.tooling.id]
   associate_public_ip_address = true
@@ -21,7 +21,7 @@ resource "aws_instance" "tooling" {
 
 resource "aws_instance" "docker_agent" {
   ami                         = "ami-0f8a61b66d1accaee"
-  instance_type               = "c7i-flex.large"
+  instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.docker_agent.id]
   associate_public_ip_address = true

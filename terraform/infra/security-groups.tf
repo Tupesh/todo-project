@@ -332,3 +332,15 @@ resource "aws_vpc_security_group_ingress_rule" "k8s_node_backend_nodeport" {
     Name = "k8s-node-backend-nodeport"
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "tooling_sonarqube_from_docker_agent" {
+  security_group_id            = aws_security_group.tooling.id
+  referenced_security_group_id = aws_security_group.docker_agent.id
+  from_port                    = 9000
+  ip_protocol                  = "tcp"
+  to_port                      = 9000
+
+  tags = {
+    Name = "tooling-sonarqube-from-docker-agent"
+  }
+}
