@@ -72,4 +72,29 @@
   ansible.builtin.apt:
     name: trivy
     state: present
+
+- name: Download SonarScanner CLI
+  ansible.builtin.get_url:
+    url: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.0.1.6346-linux-x64.zip
+    dest: /tmp/sonar-scanner-cli.zip
+    mode: "0644"
+
+- name: Extract SonarScanner CLI
+  ansible.builtin.unarchive:
+    src: /tmp/sonar-scanner-cli.zip
+    dest: /opt
+    remote_src: true
+    creates: /opt/sonar-scanner-8.0.1.6346-linux-x64
+
+- name: Create sonar-scanner symlink
+  ansible.builtin.file:
+    src: /opt/sonar-scanner-8.0.1.6346-linux-x64/bin/sonar-scanner
+    dest: /usr/local/bin/sonar-scanner
+    state: link
+    force: true
+
+- name: Verify SonarScanner installation
+  ansible.builtin.command:
+    cmd: sonar-scanner --version
+  changed_when: false
     update_cache: true
