@@ -1,6 +1,6 @@
 services:
   sonarqube:
-    image: sonarqube:2025-lta-developer
+    image: sonarqube:lts-community
     hostname: sonarqube
     container_name: sonarqube
     read_only: true

@@ -30,7 +30,7 @@ resource "aws_instance" "tooling" {
 
 resource "aws_instance" "docker_agent" {
   ami                         = "ami-0f8a61b66d1accaee"
-  instance_type               = "t3.micro"
+  instance_type               = "c7i-flex.large"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.docker_agent.id]
   associate_public_ip_address = true
@@ -38,7 +38,7 @@ resource "aws_instance" "docker_agent" {
   iam_instance_profile        = aws_iam_instance_profile.docker_agent_profile.name
 
   root_block_device {
-    volume_size = 60
+    volume_size = 40
     volume_type = "gp3"
   }
 
