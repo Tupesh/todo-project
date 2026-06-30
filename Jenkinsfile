@@ -33,11 +33,14 @@ pipeline {
             agent { label 'docker' }
 
             steps {
+                deleteDir()
                 unstash 'source-code'
 
                 sh '''
+                    echo "Checking docker-agent tools..."
                     hostname
                     whoami
+
                     docker --version
                     aws --version
                     trivy --version
@@ -50,12 +53,24 @@ pipeline {
             agent { label 'docker' }
 
             steps {
+                deleteDir()
                 unstash 'source-code'
 
                 withSonarQubeEnv("${SONARQUBE_SERVER}") {
                     sh '''
+                        echo "Running SonarQube analysis..."
                         sonar-scanner
                     '''
+                }
+            }
+        }
+
+        stage('SonarQube Quality Gate') {
+            agent none
+
+            steps {
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -69,4 +84,3 @@ pipeline {
         }
     }
 }
-
