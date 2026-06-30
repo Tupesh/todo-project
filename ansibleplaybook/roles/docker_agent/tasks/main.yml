@@ -97,4 +97,3 @@
   ansible.builtin.command:
     cmd: sonar-scanner --version
   changed_when: false
-  update_cache: true
