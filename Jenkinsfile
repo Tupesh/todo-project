@@ -73,6 +73,10 @@ pipeline {
                     test -f k8s/postgres.yml
                     test -f k8s/backend.yml
                     test -f k8s/frontend.yml
+                    test -f k8s/migrate-job.yml
+
+                    echo "Checking image placeholders..."
+                    grep -R "BACKEND_IMAGE_PLACEHOLDER\\|FRONTEND_IMAGE_PLACEHOLDER\\|FRONTEND_ORIGIN_PLACEHOLDER" k8s || true
                 '''
 
                 stash name: 'source-code', includes: '**/*'
@@ -265,45 +269,18 @@ pipeline {
             agent { label 'deploy' }
 
             steps {
+                deleteDir()
+                unstash 'source-code'
+
                 sh '''
                     echo "Deleting old migration job if it exists..."
                     kubectl -n ${NAMESPACE} delete job backend-migrate --ignore-not-found=true
 
-                    echo "Creating migration job..."
-                    cat <<EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: backend-migrate
-  namespace: ${NAMESPACE}
-spec:
-  backoffLimit: 1
-  template:
-    spec:
-      restartPolicy: Never
-      imagePullSecrets:
-        - name: ecr-registry-secret
-      containers:
-        - name: migrate
-          image: ${BACKEND_ECR}:${IMAGE_TAG}
-          command:
-            - sh
-            - -c
-            - alembic upgrade head
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend-secret
-                  key: DATABASE_URL
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: backend-secret
-                  key: JWT_SECRET
-            - name: FRONTEND_ORIGIN
-              value: "${FRONTEND_PUBLIC_URL}"
-EOF
+                    echo "Creating migration job from k8s/migrate-job.yml..."
+                    sed \
+                      -e "s#BACKEND_IMAGE_PLACEHOLDER#${BACKEND_ECR}:${IMAGE_TAG}#g" \
+                      -e "s#FRONTEND_ORIGIN_PLACEHOLDER#${FRONTEND_PUBLIC_URL}#g" \
+                      k8s/migrate-job.yml | kubectl apply -f -
 
                     echo "Waiting for migration job..."
                     kubectl -n ${NAMESPACE} wait --for=condition=complete job/backend-migrate --timeout=180s
@@ -323,7 +300,8 @@ EOF
 
                 sh '''
                     echo "Deploying backend..."
-                    sed "s#BACKEND_IMAGE_PLACEHOLDER#${BACKEND_ECR}:${IMAGE_TAG}#g" k8s/backend.yml | kubectl apply -f -
+                    sed "s#BACKEND_IMAGE_PLACEHOLDER#${BACKEND_ECR}:${IMAGE_TAG}#g" \
+                      k8s/backend.yml | kubectl apply -f -
 
                     echo "Forcing backend FRONTEND_ORIGIN for CORS..."
                     kubectl -n ${NAMESPACE} set env deployment/backend FRONTEND_ORIGIN=${FRONTEND_PUBLIC_URL}
@@ -350,7 +328,8 @@ EOF
 
                 sh '''
                     echo "Deploying frontend..."
-                    sed "s#FRONTEND_IMAGE_PLACEHOLDER#${FRONTEND_ECR}:${IMAGE_TAG}#g" k8s/frontend.yml | kubectl apply -f -
+                    sed "s#FRONTEND_IMAGE_PLACEHOLDER#${FRONTEND_ECR}:${IMAGE_TAG}#g" \
+                      k8s/frontend.yml | kubectl apply -f -
 
                     echo "Waiting for frontend rollout..."
                     kubectl -n ${NAMESPACE} rollout status deployment/frontend --timeout=180s
