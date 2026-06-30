@@ -1,11 +1,12 @@
+```groovy
 pipeline {
     agent none
 
     parameters {
         string(
             name: 'K8S_WORKER_PUBLIC_IP',
-            defaultValue: '13.220.142.185',
-            description: 'Public IP of the Kubernetes worker node.'
+            defaultValue: 'REPLACE_WITH_k8s_worker_IP',
+            description: 'Public IP of the Kubernetes worker node. Example: 34.231.171.34'
         )
     }
 
@@ -21,7 +22,6 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"
         NAMESPACE = 'devops-demo'
 
-        K8S_WORKER_IP       = "${params.K8S_WORKER_PUBLIC_IP}"
         FRONTEND_PUBLIC_URL = "http://${params.K8S_WORKER_PUBLIC_IP}:30080"
         BACKEND_PUBLIC_URL  = "http://${params.K8S_WORKER_PUBLIC_IP}:30081"
     }
@@ -34,15 +34,15 @@ pipeline {
                 sh '''
                     echo "Checking required pipeline inputs..."
 
-                    if [ -z "${K8S_WORKER_IP}" ] || [ "${K8S_WORKER_IP}" = "13.220.142.185" ]; then
+                    if [ -z "${K8S_WORKER_PUBLIC_IP}" ] || [ "${K8S_WORKER_PUBLIC_IP}" = "REPLACE_WITH_k8s_worker_IP" ]; then
                         echo "ERROR: Set K8S_WORKER_PUBLIC_IP before running this pipeline."
                         echo "Example: 34.231.171.34"
                         exit 1
                     fi
 
-                    echo "Kubernetes worker public IP: ${K8S_WORKER_IP}"
-                    echo "Frontend URL: ${FRONTEND_PUBLIC_URL}"
-                    echo "Backend URL: ${BACKEND_PUBLIC_URL}"
+                    echo "Kubernetes worker public IP: ${K8S_WORKER_PUBLIC_IP}"
+                    echo "Frontend URL: http://${K8S_WORKER_PUBLIC_IP}:30080"
+                    echo "Backend URL: http://${K8S_WORKER_PUBLIC_IP}:30081"
                 '''
             }
         }
@@ -75,7 +75,7 @@ pipeline {
                     test -f k8s/frontend.yml
                     test -f k8s/migrate-job.yml
 
-                    echo "Checking image placeholders..."
+                    echo "Checking Kubernetes placeholders..."
                     grep -R "BACKEND_IMAGE_PLACEHOLDER\\|FRONTEND_IMAGE_PLACEHOLDER\\|FRONTEND_ORIGIN_PLACEHOLDER" k8s || true
                 '''
 
@@ -111,7 +111,7 @@ pipeline {
                 deleteDir()
                 unstash 'source-code'
 
-                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                withSonarQubeEnv('sonarqube-server') {
                     sh '''
                         echo "Running SonarQube analysis..."
                         sonar-scanner
@@ -383,3 +383,4 @@ pipeline {
         }
     }
 }
+```
