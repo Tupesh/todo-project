@@ -1,6 +1,6 @@
 services:
   sonarqube:
-    image: sonarqube:lts-community
+    image: sonarqube:community
     hostname: sonarqube
     container_name: sonarqube
     read_only: true
