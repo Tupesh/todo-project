@@ -4,7 +4,7 @@ pipeline {
     parameters {
         string(
             name: 'K8S_WORKER_PUBLIC_IP',
-            defaultValue: 'REPLACE_ME',
+            defaultValue: '10.0.1.11',
             description: 'Public IP of the Kubernetes worker node. Example: 34.231.171.34'
         )
     }
@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                     echo "Checking required pipeline inputs..."
 
-                    if [ -z "${K8S_WORKER_IP}" ] || [ "${K8S_WORKER_IP}" = "REPLACE_ME" ]; then
+                    if [ -z "${K8S_WORKER_IP}" ] || [ "${K8S_WORKER_IP}" = "10.0.1.11" ]; then
                         echo "ERROR: Set K8S_WORKER_PUBLIC_IP before running this pipeline."
                         echo "Example: 34.231.171.34"
                         exit 1
